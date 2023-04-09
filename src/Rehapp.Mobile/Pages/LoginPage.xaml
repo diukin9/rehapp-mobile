@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:viewmodel="clr-namespace:Rehapp.Mobile.ViewModels"
+             x:Class="Rehapp.Mobile.Pages.LoginPage"
+             x:DataType="viewmodel:LoginPageViewModel"
+             Shell.TabBarIsVisible="False">
+
+    <Grid Padding="30, 0">
+
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Tapped="HideKeyboard"/>
+        </Grid.GestureRecognizers>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="7*" />
+            <RowDefinition Height="4*" />
+            <RowDefinition Height="6*" />
+            <RowDefinition Height="11*" />
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="4*" />
+            <RowDefinition Height="4*" />
+            <RowDefinition Height="15" />
+            <RowDefinition Height="4*" />
+            <RowDefinition Height="4*" />
+            <RowDefinition Height="4*" />
+            <RowDefinition Height="8*" />
+        </Grid.RowDefinitions>
+
+        <Image Grid.Row="1" Grid.ColumnSpan="2" Source="rehapp_logo.png" Aspect="AspectFit" />
+
+        <Grid Grid.Row="3" Grid.ColumnSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="3*" />
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Text="Логин" FontSize="16" FontFamily="geometria_bold" VerticalTextAlignment="End" />
+                <Entry x:Name="LoginEntry" Grid.Row="1" Placeholder="example@domain.com" FontFamily="geometria_medium" PlaceholderColor="#A3A3A3" FontSize="16" toolkit:SetFocusOnEntryCompletedBehavior.NextElement="{x:Reference PasswordEntry}" ReturnType="Next" TextColor="#3A3A3A" Text="{Binding Login}" />
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="3*" />
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Text="Пароль" FontSize="16" FontFamily="geometria_bold" VerticalTextAlignment="End" />
+                <Entry x:Name="PasswordEntry" Grid.Row="1" Placeholder="********" FontFamily="geometria_medium" PlaceholderColor="#A3A3A3" FontSize="16" ReturnType="Done" Completed="HideKeyboard" TextColor="#3A3A3A" Text="{Binding Password}" IsPassword="True" />
+            </Grid>
+        </Grid>
+
+        <Label Grid.Row="4" Grid.Column="1" Text="Забыли пароль?" FontFamily="geometria_medium" FontSize="16" TextColor="#A3A3A3" HorizontalOptions="End" VerticalOptions="Center" >
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding GoToPasswordRecoveryPageCommand}" />
+            </Label.GestureRecognizers>
+        </Label>
+
+        <VerticalStackLayout Grid.Row="5" Grid.ColumnSpan="2" Spacing="2" IsVisible="{Binding ErrorIsDisplayed}">
+            <Image Source="error_icon.svg" HorizontalOptions="Center" WidthRequest="18" />
+            <Label Text="{Binding ErrorMessage}" HorizontalOptions="Center" FontFamily="geometria_medium" FontSize="14" TextColor="#DF7272" />
+        </VerticalStackLayout>
+
+        <ActivityIndicator Grid.Row="5" Grid.ColumnSpan="2" IsRunning="True" VerticalOptions="Start" HorizontalOptions="Center" Color="#FF8787" HeightRequest="25" IsVisible="{Binding LoaderIsDisplayed}" />
+
+        <Button Grid.Row="6" Grid.ColumnSpan="2" FontSize="20" FontFamily="geometria_bold" TextColor="#FFFEF6" BackgroundColor="#FF8787" Padding="50, 13" Text="Войти" Command="{Binding LogInCommand}" IsEnabled="{Binding LogInCommandIsNotRunning}">
+            <Button.Shadow>
+                <Shadow Brush="Black" Offset="0, 30" Opacity="0.20" Radius="40" />
+            </Button.Shadow>
+        </Button>
+        <Button Grid.Row="8" Grid.ColumnSpan="2" FontSize="20" FontFamily="geometria_bold" TextColor="#3A3A3A" BackgroundColor="#FFFEF6" Padding="50, 13" Text="Регистрация" BorderWidth="2" BorderColor="#FF8787" Command="{Binding GoToRegistrationPageCommand}" />
+
+        <Label Grid.Row="9" Grid.ColumnSpan="2" Text="или войти с помощью" FontFamily="geometria_medium" FontSize="16" TextColor="#3A3A3A" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+
+        <StackLayout Grid.Row="10" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalOptions="Center" Spacing="10">
+            <ImageButton x:Name="LogInByVkButton" Source="vk_logo.png" Clicked="LogInByVkButton_Clicked" Command="{Binding LogInByProviderCommand}" CommandParameter="Vkontakte" IsEnabled="{Binding LogInByProviderCommandIsNotRunning}" />
+            <ImageButton x:Name="LogInByYandexButton" Source="yandex_logo.png" Clicked="LogInByYandexButton_Clicked" Command="{Binding LogInByProviderCommand}" CommandParameter="Yandex" IsEnabled="{Binding LogInByProviderCommandIsNotRunning}" />
+        </StackLayout>
+
+    </Grid>
+
+</ContentPage>

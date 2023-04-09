@@ -1,0 +1,10 @@
+(!) Данная инструкция актуальна только при условии использования android-эмулятора
+
+1. При необходимости настроить android-эмулятор (ниже описана инструкция)
+2. Запустить проект rehapp-backend с профилем HTTP
+3. Запустить проект rehapp-mobile через эмулятор
+
+НАСТРОЙКА ЭМУЛЯТОРА (выполняется только один раз):
+1. В VS: Средства -> Android -> Диспетчер устройств Android -> Новинка (менять стоит лишь количество выделенной оперативной памяти, чем больше, тем лучше)
+2. Включить Hyper-V в Windows (https://learn.microsoft.com/ru-ru/xamarin/android/get-started/installation/android-emulator/hardware-acceleration?tabs=vswin&pivots=windows#hyper-v)
+3. Принять необходимые соглашения, если VS затребует их
