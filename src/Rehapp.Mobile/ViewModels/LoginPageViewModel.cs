@@ -1,6 +1,9 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Rehapp.Mobile.Infrastructure.Abstractions;
+using Rehapp.Mobile.Models.Enums;
+using Rehapp.Mobile.Popups;
 
 namespace Rehapp.Mobile.ViewModels;
 
@@ -52,7 +55,22 @@ public partial class LoginPageViewModel : BaseViewModel, ITransient
     [RelayCommand]
     private async Task GoToRegistrationPageAsync()
     {
-        await NavigationService.GoToRegistrationPageAsync(true);
+        var popup = new ChoosingAccountTypePopup();
+        await Shell.Current.CurrentPage.ShowPopupAsync(popup);
+
+        if (popup.IsSuccessful)
+        {
+            if (popup.AccountType == AccountType.Patient)
+            {
+                //TODO change to patient registration page
+                await NavigationService.GoToRegistrationPageAsync();
+            }
+            else
+            {
+                //TODO change to specialist registration page
+                await NavigationService.GoToRegistrationPageAsync();
+            }
+        }
     }
 
     [RelayCommand]
@@ -99,17 +117,36 @@ public partial class LoginPageViewModel : BaseViewModel, ITransient
 
         await Task.Delay(100);
 
-        var internalResponse = await storageService.UpdateTokenAsync(provider);
+        //var internalResponse = await storageService.UpdateTokenAsync(provider);
 
         LoaderIsDisplayed = false;
 
-        if (!internalResponse.IsSuccess)
-        {
-            ErrorMessage = "Ошибка! Повторите позднее..";
-            ErrorIsDisplayed = true;
-            return;
-        }
+        //if (!internalResponse.IsSuccess && незарегистрирован)
+        //{
+        //    var popup = new ChoosingAccountTypePopup();
+        //    await Shell.Current.CurrentPage.ShowPopupAsync(popup);
 
-        await NavigationService.GoToMainPageAsync(true);
+        //    if (popup.IsSuccessful)
+        //    {
+        //        if (popup.AccountType == AccountType.Patient)
+        //        {
+        //            //TODO change to patient registration page
+        //            await NavigationService.GoToRegistrationPageAsync();
+        //        }
+        //        else
+        //        {
+        //            //TODO change to specialist registration page
+        //            await NavigationService.GoToRegistrationPageAsync();
+        //        }
+        //    }
+        //}
+        //else if (!internalResponse.IsSuccess)
+        //{
+        //    ErrorMessage = "Ошибка! Повторите позднее..";
+        //    ErrorIsDisplayed = true;
+        //    return;
+        //}
+
+        //await NavigationService.GoToMainPageAsync(true);
     }
 }
