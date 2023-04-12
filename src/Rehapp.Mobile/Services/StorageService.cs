@@ -1,10 +1,12 @@
 ﻿using Rehapp.Mobile.Infrastructure.Abstractions;
 using Rehapp.Mobile.Models;
-using Rehapp.Mobile.Platforms;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+#if ANDROID 
+using Rehapp.Mobile.Platforms;
+#endif
 
 namespace Rehapp.Mobile.Services;
 
@@ -171,26 +173,29 @@ public class StorageService : IService, ITransient
 
         try
         {
-            //callback будет иметь значение "rehapp://"
+#if ANDROID
             var callback = $"{WebAuthenticationCallbackActivity.CALLBACK_SCHEME}://";
-            //authUrl будет иметь значение "https://localhost:7031/api/v1/security/token/Yandex?callback=rehapp://"
             var authUrl = new Uri(API_LOGIN_BY_PROVIDER(scheme, callback));
-            //через волшебный WebAuthenticator пробую аутентифицироваться
             var response = await WebAuthenticator.AuthenticateAsync(authUrl, new Uri(callback));
-            //из ответа потом достаю токены
+
             response.Properties.TryGetValue("accessToken", out var accessToken);
             response.Properties.TryGetValue("refreshToken", out var refreshToken);
-            //если токенов нет - сообщаю об ошибке
+
             if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(refreshToken))
             {
                 return internalResponse.Failure();
             }
-            //some logics here...
+
+            //TODO some logics here
+
             return internalResponse.Success(new Token
             {
                 AccessToken = WebUtility.UrlDecode(accessToken),
                 RefreshToken = WebUtility.UrlDecode(refreshToken)
             });
+#else 
+            return await Task.FromResult(internalResponse.Failure(new NotImplementedException()));
+#endif
         }
         catch (Exception exception)
         {
