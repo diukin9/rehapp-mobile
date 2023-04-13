@@ -2,6 +2,12 @@
 
 public static class Constants
 {
+    #region pages
+
+    public const string PASSWORD_RECOVERY_PAGE = "temp_path"; //TODO
+
+    #endregion
+
     #region api
 
 #if ANDROID && DEBUG
@@ -14,9 +20,11 @@ public static class Constants
 
     public const string API_LOGIN = $"{API_URL}/security/token";
 
-    public static string API_LOGIN_BY_PROVIDER(string scheme, string callback) => $"{API_URL}/security/token/{scheme}?callback={callback}"; 
+    public static string API_LOGIN_BY_PROVIDER(string scheme, string callback) => $"{API_URL}/security/token/{scheme}?callback={callback}";
 
-#endregion
+    public const string API_SEND_MAIL_TO_RECOVER_PASSWORD = $"{API_URL}/account/reset-password/send-mail";
+
+    #endregion
 
     #region storage keys
 

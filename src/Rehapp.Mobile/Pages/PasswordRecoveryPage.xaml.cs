@@ -10,4 +10,16 @@ public partial class PasswordRecoveryPage : ContentPage, ITransient
 		InitializeComponent();
 		BindingContext = viewModel;
 	}
+
+    private void HideKeyboard(object sender, TappedEventArgs e)
+    {
+        EmailEntry.IsEnabled = false;
+        EmailEntry.IsEnabled = true;
+    }
+
+    private void HideKeyboard(object sender, EventArgs e)
+    {
+        EmailEntry.IsEnabled = false;
+        EmailEntry.IsEnabled = true;
+    }
 }

@@ -13,6 +13,7 @@ namespace Rehapp.Mobile
             Routing.RegisterRoute(nameof(LoadingPage), typeof(LoadingPage));
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
             Routing.RegisterRoute(nameof(PasswordRecoveryPage), typeof(PasswordRecoveryPage));
+            Routing.RegisterRoute(nameof(FinalPasswordRecoveryPage), typeof(FinalPasswordRecoveryPage));
             Routing.RegisterRoute(nameof(RegistrationPage), typeof(RegistrationPage));
             Routing.RegisterRoute(nameof(HomePage), typeof(HomePage));
         }

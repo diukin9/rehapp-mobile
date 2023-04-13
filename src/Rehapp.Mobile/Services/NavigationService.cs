@@ -46,6 +46,13 @@ public static class NavigationService
         await GoToAsync(nameof(PasswordRecoveryPage), withAnimation, parameters);
     }
 
+    public static async Task GoToFinalPasswordRecoveryPageAsync(
+        bool withAnimation = false,
+        Dictionary<string, object> parameters = null)
+    {
+        await GoToAsync(nameof(FinalPasswordRecoveryPage), withAnimation, parameters);
+    }
+
     public static async Task GoToRegistrationPageAsync(
         bool withAnimation = false,
         Dictionary<string, object> parameters = null)
