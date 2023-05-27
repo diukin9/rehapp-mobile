@@ -5,17 +5,11 @@
              x:Class="Rehapp.Mobile.Pages.LoadingPage">
 
     <ContentPage.Behaviors>
-        <toolkit:StatusBarBehavior 
-            StatusBarColor="#3A3A3A" 
-            StatusBarStyle="LightContent" />
+        <toolkit:StatusBarBehavior StatusBarColor="#3A3A3A" StatusBarStyle="LightContent" />
     </ContentPage.Behaviors>
 
     <StackLayout>
-        <ActivityIndicator 
-            IsRunning="True"
-            HorizontalOptions="CenterAndExpand" 
-            VerticalOptions="CenterAndExpand"
-            Color="#FF8787"/>
+        <ActivityIndicator IsRunning="True" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Color="#FF8787"/>
     </StackLayout>
     
 </ContentPage>

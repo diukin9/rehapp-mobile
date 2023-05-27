@@ -10,15 +10,11 @@ public static class Constants
 
     #region api
 
-#if ANDROID && DEBUG
-    public const string API_URL = "http://10.0.2.2:7030/api/v1";
-#elif DEBUG
-    public const string API_URL = "https://localhost:7031/api/v1";
-#else
-    public const string API_URL = "<production address>/api/v1";
-#endif
+    public const string API_URL = "https://back.rehapp.apps.maksimemelyanov.ru/api/v1";
 
     public const string API_LOGIN = $"{API_URL}/security/token";
+
+    public const string API_CITIES = $"{API_URL}/cities";
 
     public static string API_LOGIN_BY_PROVIDER(string scheme, string callback) => $"{API_URL}/security/token/{scheme}?callback={callback}";
 
@@ -28,8 +24,26 @@ public static class Constants
 
     #region storage keys
 
-    public const string STORAGE_REFRESH_TOKEN_KEY = "refresh_token";
-    public const string STORAGE_ACCESS_TOKEN_KEY = "access_token";
+    public static string UsernameFromProvider(string provider) => $"{provider}-{USERNAME}";
+    public static string SurnameFromProvider(string provider) => $"{provider}-{SURNAME}";
+    public static string FirstnameFromProvider(string provider) => $"{provider}-{FIRSTNAME}";
+    public static string EmailFromProvider(string provider) => $"{provider}-{EMAIL}";
+
+
+    #endregion
+
+    #region common
+
+    public const string USER_REGISTRATION_REQUIRED = "user registration required";
+    public const string HRESULT = "hresult";
+    public const string MESSAGE = "message";
+    public const string USERNAME = "username";
+    public const string SURNAME = "surname";
+    public const string FIRSTNAME = "firstname";
+    public const string EMAIL = "email";
+    public const string ACCESS_TOKEN = "accessToken";
+    public const string REFRESH_TOKEN = "refreshToken";
+    public const string ACCOUNT_TYPE = "accountType";
 
     #endregion
 }

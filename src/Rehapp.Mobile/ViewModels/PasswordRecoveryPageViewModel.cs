@@ -2,6 +2,9 @@
 using CommunityToolkit.Mvvm.Input;
 using Rehapp.Mobile.Infrastructure.Abstractions;
 using Rehapp.Mobile.Infrastructure.Extensions;
+//using RehApp.Infrastructure.Common;
+//using RehApp.Infrastructure.Common.Extensions;
+//using RehApp.Infrastructure.Common.Interfaces;
 
 namespace Rehapp.Mobile.ViewModels;
 
@@ -18,14 +21,11 @@ public partial class PasswordRecoveryPageViewModel : BaseViewModel, ITransient
     [ObservableProperty]
     private string email;
 
-    [ObservableProperty]
-    private bool errorIsDisplayed;
+    #endregion
 
-    [ObservableProperty]
-    private string errorMessage;
+    #region properties
 
-    [ObservableProperty]
-    private bool loaderIsDisplayed;
+    public bool ResetPasswordCommandIsNotRunning => !ResetPasswordCommand.IsRunning;
 
     #endregion
 
@@ -43,35 +43,44 @@ public partial class PasswordRecoveryPageViewModel : BaseViewModel, ITransient
     [RelayCommand]
     private async Task ResetPasswordAsync()
     {
-        ErrorIsDisplayed = false;
-        LoaderIsDisplayed = true;
+        HideError();
+        ShowLoader();
 
         await Task.Delay(100);
 
-        if (string.IsNullOrEmpty(Email))
+        #region form validation
+
+        var formValidationConditions = new[]
         {
-            LoaderIsDisplayed = false;
-            ErrorMessage = "Необходимо заполнить все поля";
-            ErrorIsDisplayed = true;
-            return;
+            KeyValuePair.Create(
+                key: string.IsNullOrEmpty(Email),
+                value: "Необходимо заполнить поле 'Имя'"),
+            KeyValuePair.Create(
+                key: !Email.IsEmail(),
+                value: "Неверный формат почтового ящика"),
+        };
+
+        foreach (var kvp in formValidationConditions)
+        {
+            if (ShowErrorByCondition(kvp.Key, kvp.Value))
+            {
+                HideLoader();
+                return;
+            }
         }
 
-        if (!Email.IsEmail())
-        {
-            LoaderIsDisplayed = false;
-            ErrorMessage = "Неверный формат почтового ящика";
-            ErrorIsDisplayed = true;
-            return;
-        }
+        #endregion
 
         var sendMailResponse = await accountService.SendMailToRecoveryPasswordAsync(Email);
 
-        LoaderIsDisplayed = false;
+        HideLoader();
 
-        if (!sendMailResponse.IsSuccess)
+        //TODO Такого пользователя нет
+
+        if (ShowErrorByCondition(
+            condition: !sendMailResponse.IsSuccess,
+            message: "Письмо не отправлено. Попробуйте позже"))
         {
-            ErrorMessage = "Письмо не отправлено. Попробуйте позже";
-            ErrorIsDisplayed = true;
             return;
         }
 

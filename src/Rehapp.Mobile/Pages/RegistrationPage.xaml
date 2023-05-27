@@ -7,8 +7,124 @@
              x:DataType="viewmodel:RegistrationPageViewModel"
              Shell.TabBarIsVisible="False">
 
-    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-        <Button Text="Вернуться назад" Command="{Binding GoBackCommand}" />
-    </VerticalStackLayout>
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding GetCitiesCommand}" />
+    </ContentPage.Behaviors>
 
+    <ScrollView>
+        <Grid>
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="HideKeyboard"/>
+            </Grid.GestureRecognizers>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="60" />
+            </Grid.RowDefinitions>
+
+            <AbsoluteLayout Grid.RowSpan="4">
+                <BoxView Color="#DF7272" CornerRadius="360" AbsoluteLayout.LayoutBounds="230, -170, 250, 250" AbsoluteLayout.LayoutFlags="None" />
+                <BoxView Color="#FF8787" CornerRadius="360" AbsoluteLayout.LayoutBounds="340, 25, 150, 150" AbsoluteLayout.LayoutFlags="None" />
+            </AbsoluteLayout>
+
+            <HorizontalStackLayout Grid.Row="0" Spacing="10" Margin="35, 0" >
+                <HorizontalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding GoBackCommand}" />
+                </HorizontalStackLayout.GestureRecognizers>
+                <Image HeightRequest="16" Source="go_back_icon.png" />
+                <Label VerticalOptions="Center" FontFamily="geometria_medium" FontSize="20" TextColor="#909090" Text="Вход"/>
+            </HorizontalStackLayout>
+
+            <Label Grid.Row="1" FontFamily="geometria_bold" FontAttributes="Bold" FontSize="32" TextColor="#3A3A3A" Text="Регистрация" Margin="35, 0" />
+
+            <StackLayout Grid.Row="2" Orientation="Vertical" Spacing="20" Margin="35, 0">
+                <Image Source="registration_page_img.png" WidthRequest="180" Margin="0, 15"/>
+
+                <StackLayout Orientation="Vertical" Spacing="10">
+                    <VerticalStackLayout>
+                        <Label Text="Имя" FontFamily="geometria_bold" FontAttributes="Bold" FontSize="16" TextColor="#3A3A3A" />
+                        <Entry x:Name="FirstNameEntry" Text="{Binding FirstName}" ReturnType="Next" FontFamily="geometria_medium" FontSize="16" TextColor="#3A3A3A" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout>
+                        <Label Text="Фамилия" FontFamily="geometria_bold" FontAttributes="Bold" FontSize="16" TextColor="#3A3A3A" />
+                        <Entry x:Name="SurnameEntry" ReturnType="Next" Text="{Binding LastName}" FontFamily="geometria_medium" FontSize="16" TextColor="#3A3A3A"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout>
+                        <Label Text="Логин" FontFamily="geometria_bold" FontAttributes="Bold" FontSize="16" TextColor="#3A3A3A" />
+                        <Entry x:Name="UsernameEntry" IsReadOnly="{Binding UsernameIsReadOnly}" ReturnType="Next" Text="{Binding Username}" FontFamily="geometria_medium" FontSize="16" TextColor="#3A3A3A"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout>
+                        <Label Text="Электронная почта" FontFamily="geometria_bold" FontAttributes="Bold" FontSize="16" TextColor="#3A3A3A" />
+                        <Entry x:Name="EmailEntry" IsReadOnly="{Binding EmailIsReadOnly}" Text="{Binding Email}" Keyboard="Email" ReturnType="Next" FontFamily="geometria_medium" FontSize="16" TextColor="#3A3A3A" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout>
+                        <Label Text="Город" FontFamily="geometria_bold" FontAttributes="Bold" FontSize="16" TextColor="#3A3A3A" />
+                        <Picker Title="Выберите город" FontFamily="geometria_medium" FontSize="16" TextColor="#3A3A3A" SelectedItem="{Binding City}" ItemsSource="{Binding Cities}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout>
+                        <Label Text="Пароль" FontFamily="geometria_bold" FontAttributes="Bold" FontSize="16" TextColor="#3A3A3A" />
+                        <Entry x:Name="PasswordEntry" ReturnType="Next" Text="" FontFamily="geometria_medium" IsPassword="True" FontSize="16" TextColor="#3A3A3A" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout>
+                        <Label Text="Подтверждение пароля" FontFamily="geometria_bold" FontAttributes="Bold" FontSize="16" TextColor="#3A3A3A" />
+                        <Entry x:Name="PasswordConfirmationEntry" ReturnType="Done" Text="" IsPassword="True" FontFamily="geometria_medium" FontSize="16" TextColor="#3A3A3A" />
+                    </VerticalStackLayout>
+                </StackLayout>
+
+                <StackLayout Orientation="Vertical" Spacing="15" Margin="0, 5" IsVisible="{Binding IsSpecialist}">
+                    <StackLayout Orientation="Horizontal">
+                        <Label FontFamily="geometria_light" FontAttributes="Bold" FontSize="14" TextColor="#3A3A3A">
+                            <Label.Text>
+Документы об образовании
+и курсах повышения 
+квалификации
+                            </Label.Text>
+                        </Label>
+                        <Button BorderWidth="2" BorderColor="#FF8787" BackgroundColor="#FFFFFF" TextColor="#3A3A3A" HorizontalOptions="EndAndExpand" Text="Добавить" Command="{Binding FilePickerClickedCommand}" />
+                    </StackLayout>
+                    <StackLayout IsVisible="{Binding CanClearUploadedFiles,Mode=TwoWay}" Orientation="Horizontal" Spacing="5">
+                        <Label Text="{Binding UploadedFilesCount, StringFormat='Файлов загружено: {0}'}" TextColor="#3A3A3A" FontFamily="geometria_bold" FontAttributes="Bold" FontSize="12" />
+                        <Label Text="(удалить)" TextColor="#DF7272" FontFamily="geometria_bold" FontAttributes="Bold" FontSize="12" ZIndex="100">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ClearUploadedFilesCommand}"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </StackLayout>
+                </StackLayout>
+
+                <ActivityIndicator IsRunning="True" VerticalOptions="Start" HorizontalOptions="Center" Color="#FF8787" HeightRequest="25" IsVisible="{Binding LoaderIsDisplayed}" />
+
+                <VerticalStackLayout VerticalOptions="Center" Spacing="5" IsVisible="{Binding ErrorIsDisplayed}">
+                    <Image Source="warning_icon.png" HorizontalOptions="Center" WidthRequest="25" />
+                    <Label Text="{Binding ErrorMessage}" HorizontalOptions="Center" FontFamily="geometria_medium" FontSize="14" TextColor="#DF7272" HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+
+                <HorizontalStackLayout>
+                    <CheckBox VerticalOptions="Center" Color="#DF7272" IsChecked="{Binding ConsentToTermsOfDataProcessing}" />
+                    <Label VerticalOptions="Center" FontFamily="geometria_light" FontAttributes="Bold" FontSize="12" TextColor="#3A3A3A">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Соглашаюсь с "/>
+                                <Span TextColor="#DF7272" TextDecorations="Underline" Text="условиями обработки данных"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </HorizontalStackLayout>
+
+                <Button IsEnabled="{Binding RegisterCommandIsNotRunning}" Command="{Binding RegisterCommand}" FontSize="18" FontFamily="geometria_bold" Padding="45, 15" TextColor="#FFFEF6" BackgroundColor="#FF8787" Text="Продолжить" HorizontalOptions="Center">
+                    <Button.Shadow>
+                        <Shadow Brush="Black" Offset="0, 30" Opacity="0.15" Radius="40" />
+                    </Button.Shadow>
+                </Button>
+            </StackLayout>
+        </Grid>
+    </ScrollView>
 </ContentPage>

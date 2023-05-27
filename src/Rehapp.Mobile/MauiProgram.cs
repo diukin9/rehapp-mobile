@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
-using CommunityToolkit.Maui;
+﻿using CommunityToolkit.Maui;
+using Microsoft.Extensions.Logging;
 using Rehapp.Mobile.Infrastructure.Extensions;
+//using RehApp.Infrastructure.Common.Extensions;
 using System.Reflection;
 
 namespace Rehapp.Mobile;

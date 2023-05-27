@@ -2,8 +2,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Rehapp.Mobile.Infrastructure.Abstractions;
-using Rehapp.Mobile.Models.Enums;
 using Rehapp.Mobile.Popups;
+//using RehApp.Infrastructure.Common;
+//using RehApp.Infrastructure.Common.Interfaces;
 
 namespace Rehapp.Mobile.ViewModels;
 
@@ -30,15 +31,6 @@ public partial class LoginPageViewModel : BaseViewModel, ITransient
     [ObservableProperty]
     private string password;
 
-    [ObservableProperty]
-    private bool errorIsDisplayed;
-
-    [ObservableProperty]
-    private string errorMessage;
-
-    [ObservableProperty]
-    private bool loaderIsDisplayed;
-
     #endregion
 
     public LoginPageViewModel(StorageService storageService)
@@ -55,54 +47,54 @@ public partial class LoginPageViewModel : BaseViewModel, ITransient
     [RelayCommand]
     private async Task GoToRegistrationPageAsync()
     {
-        var popup = new ChoosingAccountTypePopup();
-        await Shell.Current.CurrentPage.ShowPopupAsync(popup);
-
-        if (popup.IsSuccessful)
-        {
-            if (popup.AccountType == AccountType.Patient)
-            {
-                //TODO change to patient registration page
-                await NavigationService.GoToRegistrationPageAsync();
-            }
-            else
-            {
-                //TODO change to specialist registration page
-                await NavigationService.GoToRegistrationPageAsync();
-            }
-        }
+        await OpenChoosingAccountTypePopupAsync();
     }
 
     [RelayCommand]
     private async Task LogInAsync()
     {
-        ErrorIsDisplayed = false;
-        LoaderIsDisplayed = true;
+        HideError();
+        ShowLoader();
 
         await Task.Delay(100);
 
-        if (string.IsNullOrEmpty(Login) || string.IsNullOrEmpty(Password))
+        Login = Login?.Trim();
+
+        #region form validation
+
+        var formValidationConditions = new[]
         {
-            LoaderIsDisplayed = false;
-            ErrorMessage = "Необходимо заполнить все поля";
-            ErrorIsDisplayed = true;
-            return;
+            KeyValuePair.Create(
+                key: string.IsNullOrEmpty(Login),
+                value: $"Необходимо заполнить поле 'Логин'"),
+            KeyValuePair.Create(
+                key : string.IsNullOrEmpty(Password),
+                value: $"Необходимо заполнить поле 'Пароль'")
+        };
+
+        foreach (var kvp in formValidationConditions)
+        {
+            if (ShowErrorByCondition(kvp.Key, kvp.Value))
+            {
+                HideLoader();
+                return;
+            }
         }
+
+        #endregion
 
         var internalResponse = await storageService.UpdateTokenAsync(Login, Password);
 
-        LoaderIsDisplayed = false;
+        HideLoader();
 
-        if (!internalResponse.IsSuccess && internalResponse.Exception.GetType() == typeof(TaskCanceledException))
+        if (!internalResponse.IsSuccess && internalResponse.Exception?.GetType() == typeof(TaskCanceledException))
         {
-            ErrorMessage = "Ошибка! Повторите позднее..";
-            ErrorIsDisplayed = true;
+            ShowError("Ошибка! Повторите позднее..");
             return;
         }
         else if (!internalResponse.IsSuccess)
         {
-            ErrorMessage = "Неверный логин или пароль";
-            ErrorIsDisplayed = true;
+            ShowError("Неверный логин или пароль");
             return;
         }
 
@@ -112,41 +104,49 @@ public partial class LoginPageViewModel : BaseViewModel, ITransient
     [RelayCommand]
     private async Task LogInByProviderAsync(string provider)
     {
-        ErrorIsDisplayed = false;
-        LoaderIsDisplayed = true;
+        HideError();
+        ShowLoader();
 
         await Task.Delay(100);
 
-        //var internalResponse = await storageService.UpdateTokenAsync(provider);
+        var internalResponse = await storageService.UpdateTokenAsync(provider);
 
-        LoaderIsDisplayed = false;
+        HideLoader();
 
-        //if (!internalResponse.IsSuccess && незарегистрирован)
-        //{
-        //    var popup = new ChoosingAccountTypePopup();
-        //    await Shell.Current.CurrentPage.ShowPopupAsync(popup);
+        if (!internalResponse.IsSuccess && internalResponse.Exception.Message == USER_REGISTRATION_REQUIRED)
+        {
+            await OpenChoosingAccountTypePopupAsync(provider);
+        }
+        else if (!internalResponse.IsSuccess)
+        {
+            ShowError("Ошибка! Повторите позднее..");
+        }
+    }
 
-        //    if (popup.IsSuccessful)
-        //    {
-        //        if (popup.AccountType == AccountType.Patient)
-        //        {
-        //            //TODO change to patient registration page
-        //            await NavigationService.GoToRegistrationPageAsync();
-        //        }
-        //        else
-        //        {
-        //            //TODO change to specialist registration page
-        //            await NavigationService.GoToRegistrationPageAsync();
-        //        }
-        //    }
-        //}
-        //else if (!internalResponse.IsSuccess)
-        //{
-        //    ErrorMessage = "Ошибка! Повторите позднее..";
-        //    ErrorIsDisplayed = true;
-        //    return;
-        //}
+    private async Task OpenChoosingAccountTypePopupAsync(string provider = null)
+    {
+        var popup = new ChoosingAccountTypePopup();
+        await Shell.Current.CurrentPage.ShowPopupAsync(popup);
 
-        //await NavigationService.GoToMainPageAsync(true);
+        if (popup.IsSuccessful)
+        {
+            if (!string.IsNullOrEmpty(provider))
+            {
+                var userResponse = await storageService.GetUserDataFromProviderAsync(provider);
+
+                await NavigationService.GoToRegistrationPageAsync(true, new Dictionary<string, object>
+                {
+                    { EMAIL, userResponse.Data?.Email },
+                    { USERNAME, userResponse.Data?.Username },
+                    { FIRSTNAME, userResponse.Data?.FirstName },
+                    { SURNAME, userResponse.Data?.Surname },
+                    { ACCOUNT_TYPE, popup.AccountType }
+                });
+            }
+            else await NavigationService.GoToRegistrationPageAsync(true, new Dictionary<string, object>
+            {
+                { ACCOUNT_TYPE, popup.AccountType }
+            });
+        }
     }
 }

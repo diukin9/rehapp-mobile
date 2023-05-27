@@ -71,12 +71,12 @@
 
         <ActivityIndicator Grid.Row="5" Grid.ColumnSpan="2" IsRunning="True" VerticalOptions="Start" HorizontalOptions="Center" Color="#FF8787" HeightRequest="25" IsVisible="{Binding LoaderIsDisplayed}" />
 
-        <Button Grid.Row="6" Grid.ColumnSpan="2" FontSize="20" FontFamily="geometria_bold" TextColor="#FFFEF6" BackgroundColor="#FF8787" Padding="50, 13" Text="Войти" Command="{Binding LogInCommand}" IsEnabled="{Binding LogInCommandIsNotRunning}">
+        <Button Grid.Row="6" Grid.ColumnSpan="2" FontSize="20" FontFamily="geometria_bold" TextColor="#FFFFFF" BackgroundColor="#FF8787" Padding="50, 13" Text="Войти" Command="{Binding LogInCommand}" IsEnabled="{Binding LogInCommandIsNotRunning}">
             <Button.Shadow>
                 <Shadow Brush="Black" Offset="0, 30" Opacity="0.20" Radius="40" />
             </Button.Shadow>
         </Button>
-        <Button Grid.Row="8" Grid.ColumnSpan="2" FontSize="20" FontFamily="geometria_bold" TextColor="#3A3A3A" BackgroundColor="#FFFEF6" Padding="50, 13" Text="Регистрация" BorderWidth="2" BorderColor="#FF8787" Command="{Binding GoToRegistrationPageCommand}" />
+        <Button Grid.Row="8" Grid.ColumnSpan="2" FontSize="20" FontFamily="geometria_bold" TextColor="#3A3A3A" BackgroundColor="#FFFFFF" Padding="50, 13" Text="Регистрация" BorderWidth="2" BorderColor="#FF8787" Command="{Binding GoToRegistrationPageCommand}" />
 
         <Label Grid.Row="9" Grid.ColumnSpan="2" Text="или войти с помощью" FontFamily="geometria_medium" FontSize="16" TextColor="#3A3A3A" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
 

@@ -1,4 +1,7 @@
-﻿using Rehapp.Mobile.Infrastructure.Abstractions;
+﻿//using RehApp.Infrastructure.Common;
+//using RehApp.Infrastructure.Common.Interfaces;
+
+using Rehapp.Mobile.Infrastructure.Abstractions;
 
 namespace Rehapp.Mobile.ViewModels;
 
@@ -20,7 +23,7 @@ public class LoadingPageViewModel : BaseViewModel, ISingleton
     {
         var token = await storageService.GetTokenAsync();
 
-        if (token is null)
+        if (token?.Data is null)
         {
             await NavigationService.GoToLoginPageAsync();
         }

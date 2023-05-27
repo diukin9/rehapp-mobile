@@ -1,10 +1,12 @@
-﻿using Rehapp.Mobile.Infrastructure.Abstractions;
-using Rehapp.Mobile.Models;
+﻿using Rehapp.Mobile.Models;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Text.Json;
-#if ANDROID 
+using Rehapp.Mobile.Infrastructure.Abstractions;
+//using RehApp.Infrastructure.Common.Interfaces;
+
+#if ANDROID
 using Rehapp.Mobile.Platforms;
 #endif
 
@@ -23,28 +25,24 @@ public class StorageService : IService, ITransient
     {
         var internalResponse = new InternalResponse<string>();
 
-        var accessToken = await GetAccessTokenFromSecureStorageAsync();
+        var accessToken = await GetAsync(ACCESS_TOKEN);
         if (accessToken is not null) return internalResponse.Success(accessToken);
 
-        ClearAccessTokenDataFromSecureStorage();
+        Remove(ACCESS_TOKEN);
 
-        var refreshToken = await GetRefreshTokenFromSecureStorageAsync();
+        var refreshToken = await GetAsync(REFRESH_TOKEN);
         if (refreshToken is not null)
         {
             var updateExpiredTokenInternalResponse = await UpdateExpiredTokenAsync(accessToken, refreshToken);
-            if (updateExpiredTokenInternalResponse.IsSuccess)
+            if (updateExpiredTokenInternalResponse?.Data?.AccessToken is not null)
             {
-                await SetAccessTokenInSecureStorageAsync(updateExpiredTokenInternalResponse.Data);
-            }
-
-            if (updateExpiredTokenInternalResponse.Data?.AccessToken is not null)
-            {
+                await SetAsync(ACCESS_TOKEN, updateExpiredTokenInternalResponse.Data.AccessToken);
                 return internalResponse.Success(accessToken);
             }
             else return internalResponse.Failure(updateExpiredTokenInternalResponse.Exception);
         }
 
-        ClearRefreshTokenDataFromSecureStorage();
+        Remove(REFRESH_TOKEN);
 
         return internalResponse.Failure();
     }
@@ -59,7 +57,8 @@ public class StorageService : IService, ITransient
             return internalResponse.Failure(getTokenInternalResponse.Exception);
         }
 
-        await UpdateTokenInSecureStorageAsync(getTokenInternalResponse.Data);
+        await SetAsync(ACCESS_TOKEN, getTokenInternalResponse.Data.AccessToken);
+        await SetAsync(REFRESH_TOKEN, getTokenInternalResponse.Data.RefreshToken);
 
         return internalResponse.Success();
     }
@@ -74,47 +73,69 @@ public class StorageService : IService, ITransient
             return internalResponse.Failure(getTokenInternalResponse.Exception);
         }
 
-        await UpdateTokenInSecureStorageAsync(getTokenInternalResponse.Data);
+        await SetAsync(ACCESS_TOKEN, getTokenInternalResponse.Data.AccessToken);
+        await SetAsync(REFRESH_TOKEN, getTokenInternalResponse.Data.RefreshToken);
 
         return internalResponse.Success();
     }
 
-    #region privates
-
-    private async Task UpdateTokenInSecureStorageAsync(Token token)
+    public async Task<InternalResponse<ExternalUser>> GetUserDataFromProviderAsync(string provider)
     {
-        await SetRefreshTokenInSecureStorageAsync(token);
-        await SetAccessTokenInSecureStorageAsync(token);
+        var response = new InternalResponse<ExternalUser>();
+
+        var user = new ExternalUser
+        {
+            Email = await SecureStorage.Default.GetAsync(EmailFromProvider(provider)),
+            Username = await SecureStorage.Default.GetAsync(UsernameFromProvider(provider)),
+            FirstName = await SecureStorage.Default.GetAsync(FirstnameFromProvider(provider)),
+            Surname = await SecureStorage.Default.GetAsync(SurnameFromProvider(provider))
+        };
+
+        if (string.Join(user.Email, user.Surname, user.FirstName, user.Username) == string.Empty)
+        {
+            response.Failure();
+        }
+
+        return response.Success(user);
     }
 
-    private async Task<string> GetAccessTokenFromSecureStorageAsync()
+    public async Task SetUserDataFromProdiverAsync(string provider, ExternalUser user)
     {
-        return await SecureStorage.Default.GetAsync(STORAGE_ACCESS_TOKEN_KEY);
-    }
+        var pairs = new Dictionary<string, string>()
+        {
+            { EmailFromProvider(provider), user.Email },
+            { UsernameFromProvider(provider), user.Username },
+            { FirstnameFromProvider(provider), user.FirstName },
+            { SurnameFromProvider(provider), user.Surname }
+        };
 
-    private async Task<string> GetRefreshTokenFromSecureStorageAsync()
-    {
-        return await SecureStorage.Default.GetAsync(STORAGE_REFRESH_TOKEN_KEY);
+        foreach (var pair in pairs)
+        {
+            if (!string.IsNullOrEmpty(pair.Value)) await SetAsync(pair.Key, pair.Value);
+            else Remove(pair.Key);
+        }
     }
 
     public void ClearAccessTokenDataFromSecureStorage()
     {
-        SecureStorage.Default.Remove(STORAGE_ACCESS_TOKEN_KEY);
+        SecureStorage.Default.Remove(ACCESS_TOKEN);
     }
 
-    private void ClearRefreshTokenDataFromSecureStorage()
+    #region privates
+
+    private static async Task<string> GetAsync(string key)
     {
-        SecureStorage.Default.Remove(STORAGE_REFRESH_TOKEN_KEY);
+        return await SecureStorage.Default.GetAsync(key);
     }
 
-    private async Task SetAccessTokenInSecureStorageAsync(Token token)
+    private static async Task SetAsync(string key, string value)
     {
-        await SecureStorage.Default.SetAsync(STORAGE_ACCESS_TOKEN_KEY, token.AccessToken);
+        await SecureStorage.Default.SetAsync(key, value);
     }
 
-    private async Task SetRefreshTokenInSecureStorageAsync(Token token)
+    private static void Remove(string key)
     {
-        await SecureStorage.Default.SetAsync(STORAGE_REFRESH_TOKEN_KEY, token.RefreshToken);
+        SecureStorage.Default.Remove(key);
     }
 
     private async Task<InternalResponse<Token>> UpdateExpiredTokenAsync(string expiredAccessToken, string refreshToken)
@@ -157,7 +178,7 @@ public class StorageService : IService, ITransient
             var content = await response.Content.ReadAsStreamAsync();
             var token = await JsonSerializer.DeserializeAsync<Token>(content);
             return token?.RefreshToken is null || token?.AccessToken is null
-                ? internalResponse.Failure()
+                ? internalResponse.Failure(new InvalidDataException())
                 : internalResponse.Success(token);
         }
         catch (Exception ex)
@@ -170,29 +191,43 @@ public class StorageService : IService, ITransient
     private async Task<InternalResponse<Token>> GetTokenAsync(string scheme)
     {
         var internalResponse = new InternalResponse<Token>();
-
+        
         try
         {
 #if ANDROID
             var callback = $"{WebAuthenticationCallbackActivity.CALLBACK_SCHEME}://";
             var authUrl = new Uri(API_LOGIN_BY_PROVIDER(scheme, callback));
             var response = await WebAuthenticator.AuthenticateAsync(authUrl, new Uri(callback));
+            var props = response.Properties.Select(x => new { x.Key, Value = WebUtility.UrlDecode(x.Value) }).ToList();
 
-            response.Properties.TryGetValue("accessToken", out var accessToken);
-            response.Properties.TryGetValue("refreshToken", out var refreshToken);
-
-            if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(refreshToken))
+            if (props.Any(x => x.Key == HRESULT)) return internalResponse.Failure();
+            else if (props.FirstOrDefault(x => x.Key == MESSAGE).Value.ToLower() == USER_REGISTRATION_REQUIRED)
             {
-                return internalResponse.Failure();
+                await SetUserDataFromProdiverAsync(scheme, new ExternalUser
+                {
+                    FirstName = props.FirstOrDefault(x => x.Key == FIRSTNAME)?.Value,
+                    Email = props.FirstOrDefault(x => x.Key == EMAIL)?.Value,
+                    Username = props.FirstOrDefault(x => x.Key == USERNAME)?.Value,
+                    Surname = props.FirstOrDefault(x => x.Key == SURNAME)?.Value
+                });
+                
+                return internalResponse.Failure(new InvalidOperationException(USER_REGISTRATION_REQUIRED));
             }
-
-            //TODO some logics here
-
-            return internalResponse.Success(new Token
+            else
             {
-                AccessToken = WebUtility.UrlDecode(accessToken),
-                RefreshToken = WebUtility.UrlDecode(refreshToken)
-            });
+                var token = new Token
+                {
+                    AccessToken = props.FirstOrDefault(x => x.Key == ACCESS_TOKEN)?.Value,
+                    RefreshToken = props.FirstOrDefault(x => x.Key == REFRESH_TOKEN)?.Value,
+                };
+                
+                if (string.IsNullOrEmpty(token.AccessToken) || string.IsNullOrEmpty(token.RefreshToken))
+                {
+                    return internalResponse.Failure();
+                }
+
+                return internalResponse.Success(token);
+            }
 #else 
             return await Task.FromResult(internalResponse.Failure(new NotImplementedException()));
 #endif
