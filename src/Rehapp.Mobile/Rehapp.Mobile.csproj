@@ -56,6 +56,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\..\rehapp-infrastructure\src\RehApp.Infrastructure.Common\RehApp.Infrastructure.Common\RehApp.Infrastructure.Common.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Compile Update="Pages\LoadingPage.xaml.cs">
 	    <DependentUpon>LoadingPage.xaml</DependentUpon>
 	  </Compile>

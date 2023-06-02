@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Rehapp.Mobile.Infrastructure.Abstractions;
-using Rehapp.Mobile.Infrastructure.Extensions;
+using Rehapp.Infrastructure.Abstractions;
+using Rehapp.Infrastructure.Extensions;
 //using RehApp.Infrastructure.Common;
 //using RehApp.Infrastructure.Common.Extensions;
 //using RehApp.Infrastructure.Common.Interfaces;

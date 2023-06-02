@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Rehapp.Mobile.Infrastructure.Abstractions;
-using Rehapp.Mobile.Infrastructure.Extensions;
+using Rehapp.Infrastructure.Abstractions;
+using Rehapp.Infrastructure.Extensions;
 using Rehapp.Mobile.Models;
 using Rehapp.Mobile.Models.Enums;
 //using RehApp.Infrastructure.Common;

@@ -1,4 +1,4 @@
-using Rehapp.Mobile.Infrastructure.Abstractions;
+using Rehapp.Infrastructure.Abstractions;
 using Rehapp.Mobile.ViewModels;
 //using RehApp.Infrastructure.Common.Interfaces;
 
