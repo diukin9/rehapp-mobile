@@ -1,10 +1,10 @@
-﻿using Rehapp.Mobile.Models;
+﻿using Rehapp.Infrastructure.Core.Abstractions;
+using Rehapp.Infrastructure.Core.Models;
+using Rehapp.Mobile.Models;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Text.Json;
-using Rehapp.Infrastructure.Abstractions;
-//using RehApp.Infrastructure.Common.Interfaces;
 
 #if ANDROID
 using Rehapp.Mobile.Platforms;

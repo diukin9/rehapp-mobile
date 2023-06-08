@@ -1,12 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Rehapp.Infrastructure.Abstractions;
-using Rehapp.Infrastructure.Extensions;
+using Rehapp.Infrastructure.Core.Abstractions;
+using Rehapp.Infrastructure.Core.Extensions;
+using Rehapp.Infrastructure.Core.Static;
 using Rehapp.Mobile.Models;
 using Rehapp.Mobile.Models.Enums;
-//using RehApp.Infrastructure.Common;
-//using RehApp.Infrastructure.Common.Extensions;
-//using RehApp.Infrastructure.Common.Interfaces;
 using System.Collections.ObjectModel;
 
 namespace Rehapp.Mobile.ViewModels;
@@ -69,6 +67,8 @@ public partial class RegistrationPageViewModel : BaseViewModel, ITransient, IQue
 
     private readonly CityService cityService;
 
+    private readonly AccountService accountService;
+
     #endregion
 
     #region properties
@@ -77,10 +77,11 @@ public partial class RegistrationPageViewModel : BaseViewModel, ITransient, IQue
 
     #endregion
 
-    public RegistrationPageViewModel(FileService fileService, CityService cityService)
+    public RegistrationPageViewModel(FileService fileService, CityService cityService, AccountService accountService)
     {
         this.fileService = fileService;
         this.cityService = cityService;
+        this.accountService = accountService;
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -208,8 +209,8 @@ public partial class RegistrationPageViewModel : BaseViewModel, ITransient, IQue
                 key : LastName.Any(x => !char.IsLetter(x) && !char.IsWhiteSpace(x) && x != '-'),
                 value: "Поле 'Фамилия' может содержать только буквы, символы пробела и тире"),
             KeyValuePair.Create(
-                key : Username.Any(x => !char.IsLetter(x) && !char.IsDigit(x) && x != '-'),
-                value: "Поле 'Логин' может содержать только буквы, цифры и тире"),
+                key : Username.Any(x => !char.IsLetter(x) && !char.IsDigit(x) && x != '-' && x != '.'),
+                value: "Поле 'Логин' может содержать только буквы, цифры, точку и тире"),
             KeyValuePair.Create(
                 key : !Email.IsEmail(),
                 value: "Указан неверный формат почтового ящика"),
@@ -236,21 +237,41 @@ public partial class RegistrationPageViewModel : BaseViewModel, ITransient, IQue
             }
         }
 
-        //TODO такой email уже зарегистрирован
-        //TODO такой username уже зарегистрирован
-        //TODO произошла ошибка, попробуйте позже
-
-        if (accountType == AccountType.Patient)
+        var response = await accountService.RegisterAsync(new UserRegistrationModel
         {
+            City = City,
+            Email = Email,
+            FirstName = FirstName,
+            Surname = LastName,
+            Username = Username,
+            Type = accountType
+        }, uploadedFiles);
 
+        var responseValidationConditions = new[]
+        {
+            KeyValuePair.Create(
+                key: string.IsNullOrEmpty(FirstName),
+                value: $"Необходимо заполнить поле 'Имя'")
+        };
+        if (response.Exception?.Message == Exceptions.UserWithSuchEmailIsAlreadyRegistered.Message)
+        {
+            ShowError("");
+            return;
         }
-        else if (accountType == AccountType.Specialist)
+        else if (response.Exception?.Message == Exceptions.UserWithSuchUsernameIsAlreadyRegistered.Message)
         {
-
+            ShowError("");
+            return;
         }
-        else
+        else if (response.Exception?.Message == Exceptions.InvalidCityIdPassed.Message)
         {
-            throw new NotImplementedException();
+            ShowError("");
+            return;
+        }
+        else if (response.Exception is not null)
+        {
+            ShowError("");
+            return;
         }
 
         #endregion

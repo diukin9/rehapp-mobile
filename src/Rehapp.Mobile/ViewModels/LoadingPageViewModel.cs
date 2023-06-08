@@ -1,7 +1,4 @@
-﻿//using RehApp.Infrastructure.Common;
-//using RehApp.Infrastructure.Common.Interfaces;
-
-using Rehapp.Infrastructure.Abstractions;
+﻿using Rehapp.Infrastructure.Core.Abstractions;
 
 namespace Rehapp.Mobile.ViewModels;
 

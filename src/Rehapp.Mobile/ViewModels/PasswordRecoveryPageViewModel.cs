@@ -1,10 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Rehapp.Infrastructure.Abstractions;
-using Rehapp.Infrastructure.Extensions;
-//using RehApp.Infrastructure.Common;
-//using RehApp.Infrastructure.Common.Extensions;
-//using RehApp.Infrastructure.Common.Interfaces;
+using Rehapp.Infrastructure.Core.Abstractions;
+using Rehapp.Infrastructure.Core.Extensions;
 
 namespace Rehapp.Mobile.ViewModels;
 
@@ -56,7 +53,7 @@ public partial class PasswordRecoveryPageViewModel : BaseViewModel, ITransient
                 key: string.IsNullOrEmpty(Email),
                 value: "Необходимо заполнить поле 'Имя'"),
             KeyValuePair.Create(
-                key: !Email.IsEmail(),
+                key: Email.IsEmail(),
                 value: "Неверный формат почтового ящика"),
         };
 

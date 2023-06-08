@@ -1,6 +1,6 @@
-﻿using Rehapp.Infrastructure.Abstractions;
+﻿using Rehapp.Infrastructure.Core.Abstractions;
+using Rehapp.Infrastructure.Core.Models;
 using Rehapp.Mobile.Models;
-//using RehApp.Infrastructure.Common.Interfaces;
 
 namespace Rehapp.Mobile.Services;
 

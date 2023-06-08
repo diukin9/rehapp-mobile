@@ -9,5 +9,5 @@ namespace Rehapp.Mobile.Platforms;
     DataScheme = CALLBACK_SCHEME)]
 public class WebAuthenticationCallbackActivity : WebAuthenticatorCallbackActivity
 {
-    public const string CALLBACK_SCHEME = "rehapp";
+    public const string CALLBACK_SCHEME = "Rehapp";
 }

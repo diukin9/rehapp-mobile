@@ -1,7 +1,5 @@
-using Rehapp.Infrastructure.Abstractions;
+using Rehapp.Infrastructure.Core.Abstractions;
 using Rehapp.Mobile.ViewModels;
-//using RehApp.Infrastructure.Common.Interfaces;
-
 namespace Rehapp.Mobile.Pages;
 
 public partial class PasswordRecoveryPage : ContentPage, ITransient

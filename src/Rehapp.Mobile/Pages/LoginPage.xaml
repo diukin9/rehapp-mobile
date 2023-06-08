@@ -33,7 +33,7 @@
             <RowDefinition Height="8*" />
         </Grid.RowDefinitions>
 
-        <Image Grid.Row="1" Grid.ColumnSpan="2" Source="rehapp_logo.png" Aspect="AspectFit" />
+        <Image Grid.Row="1" Grid.ColumnSpan="2" Source="Rehapp_logo.png" Aspect="AspectFit" />
 
         <Grid Grid.Row="3" Grid.ColumnSpan="2">
             <Grid.RowDefinitions>

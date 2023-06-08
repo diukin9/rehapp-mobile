@@ -70,12 +70,12 @@
 
                     <VerticalStackLayout>
                         <Label Text="Пароль" FontFamily="geometria_bold" FontAttributes="Bold" FontSize="16" TextColor="#3A3A3A" />
-                        <Entry x:Name="PasswordEntry" ReturnType="Next" Text="" FontFamily="geometria_medium" IsPassword="True" FontSize="16" TextColor="#3A3A3A" />
+                        <Entry x:Name="PasswordEntry" Text="{Binding Password}" ReturnType="Next" FontFamily="geometria_medium" IsPassword="True" FontSize="16" TextColor="#3A3A3A" />
                     </VerticalStackLayout>
 
                     <VerticalStackLayout>
                         <Label Text="Подтверждение пароля" FontFamily="geometria_bold" FontAttributes="Bold" FontSize="16" TextColor="#3A3A3A" />
-                        <Entry x:Name="PasswordConfirmationEntry" ReturnType="Done" Text="" IsPassword="True" FontFamily="geometria_medium" FontSize="16" TextColor="#3A3A3A" />
+                        <Entry x:Name="PasswordConfirmationEntry" ReturnType="Done" Text="{Binding PasswordConfirmation}" IsPassword="True" FontFamily="geometria_medium" FontSize="16" TextColor="#3A3A3A" />
                     </VerticalStackLayout>
                 </StackLayout>
 

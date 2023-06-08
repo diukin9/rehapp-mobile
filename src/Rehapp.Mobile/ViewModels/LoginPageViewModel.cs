@@ -1,11 +1,8 @@
 ﻿using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Rehapp.Infrastructure.Abstractions;
+using Rehapp.Infrastructure.Core.Abstractions;
 using Rehapp.Mobile.Popups;
-//using RehApp.Infrastructure.Common;
-//using RehApp.Infrastructure.Common.Interfaces;
-
 namespace Rehapp.Mobile.ViewModels;
 
 public partial class LoginPageViewModel : BaseViewModel, ITransient

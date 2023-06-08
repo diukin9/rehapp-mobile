@@ -15,7 +15,7 @@
 		<ApplicationTitle>Rehapp.Mobile</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.rehapp.mobile</ApplicationId>
+		<ApplicationId>com.companyname.Rehapp.mobile</ApplicationId>
 		<ApplicationIdGuid>7caf8275-d144-4e71-8f2c-bcf81bf80062</ApplicationIdGuid>
 
 		<!-- Versions -->
@@ -53,10 +53,7 @@
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\..\..\rehapp-infrastructure\src\RehApp.Infrastructure.Common\RehApp.Infrastructure.Common\RehApp.Infrastructure.Common.csproj" />
+		<PackageReference Include="RehApp.Infrastructure.Core" Version="1.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,6 +1,7 @@
-﻿using Rehapp.Infrastructure.Abstractions;
+﻿using Microsoft.AspNetCore.Http;
+using Rehapp.Infrastructure.Core.Abstractions;
+using Rehapp.Infrastructure.Core.Models;
 using Rehapp.Mobile.Models;
-//using RehApp.Infrastructure.Common.Interfaces;
 using System.Net.Http.Headers;
 
 namespace Rehapp.Mobile.Services;

@@ -10,7 +10,7 @@ public static class Constants
 
     #region api
 
-    public const string API_URL = "https://back.rehapp.apps.maksimemelyanov.ru/api/v1";
+    public const string API_URL = "https://back.Rehapp.apps.maksimemelyanov.ru/api/v1";
 
     public const string API_LOGIN = $"{API_URL}/security/token";
 
@@ -19,6 +19,8 @@ public static class Constants
     public static string API_LOGIN_BY_PROVIDER(string scheme, string callback) => $"{API_URL}/security/token/{scheme}?callback={callback}";
 
     public const string API_SEND_MAIL_TO_RECOVER_PASSWORD = $"{API_URL}/account/reset-password/send-mail";
+
+    public const string API_REGISTER = $"{API_URL}/account/register";
 
     #endregion
 
